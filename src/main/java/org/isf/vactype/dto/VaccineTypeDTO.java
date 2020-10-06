@@ -1,20 +1,18 @@
 package org.isf.vactype.dto;
 
+//  import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.persistence.Column;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 @ApiModel(description = "Class representing a vaccine type")
 public class VaccineTypeDTO {
 
-    @NotNull
+//    @NotNull
     @ApiModelProperty(notes = "Code of the vaccine type", example="C", position = 1)
     private String code;
 
-    @NotNull
+//    @NotNull
     @ApiModelProperty(notes = "Description of the vaccine type", example="Child", position = 2)
     private String description;
 

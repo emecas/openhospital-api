@@ -1,15 +1,13 @@
 package org.isf.visits.dto;
 
+import java.util.GregorianCalendar;
+
+import javax.validation.constraints.NotNull;
+
+import org.isf.patient.dto.PatientDTO;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.isf.patient.dto.PatientDTO;
-import org.isf.patient.model.Patient;
-
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import java.util.GregorianCalendar;
 
 @ApiModel(description = "Class representing a vaccine type")
 public class VisitDTO {

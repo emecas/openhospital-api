@@ -7,9 +7,6 @@ package org.isf.operation.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import org.isf.accounting.dto.BillDTO;

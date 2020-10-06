@@ -8,6 +8,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.modelmapper.AbstractConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@Configuration
 public class ByteArrayToBlobConverter extends AbstractConverter<byte[], Blob> {
 	
 	@Override
