@@ -22,10 +22,13 @@
 package org.isf.agetype.rest;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +43,9 @@ import org.isf.agetype.model.AgeType;
 import org.isf.shared.exceptions.OHResponseEntityExceptionHandler;
 import org.isf.shared.mapper.converter.BlobToByteArrayConverter;
 import org.isf.shared.mapper.converter.ByteArrayToBlobConverter;
+import org.isf.utils.exception.OHServiceException;
+import org.isf.utils.exception.model.OHExceptionMessage;
+import org.isf.utils.exception.model.OHSeverityLevel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -52,7 +58,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AgeTypeControllerTest {
@@ -80,26 +85,93 @@ public class AgeTypeControllerTest {
 	}
 
 	@Test
-	public void testGetAllAgeTypes_200() throws Exception {
+	public void testGetAllAgeTypes_200() throws OHServiceException  {
 		String request = "/agetypes";
 
 		ArrayList<AgeType> results = AgeTypeHelper.genArrayList(5);
 		List<AgeTypeDTO> parsedResults = ageTypeMapper.map2DTOList(results);
 
-		when(ageTypeManagerMock.getAgeType())
-				.thenReturn(results);
+		when(ageTypeManagerMock.getAgeType()).thenReturn(results);
 
-		MvcResult result = this.mockMvc
+		MvcResult result = null;
+
+		try {
+			result = this.mockMvc
 				.perform(get(request))
 				.andDo(log())
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString(new ObjectMapper().writeValueAsString(parsedResults))))
 				.andReturn();
-
-		LOGGER.debug("result: {}", result);
+		} catch (Exception e) {
+			fail("Exception Realted to MockMvc");
+		}
+		finally {
+			LOGGER.debug("result: {}", result);
+		}
 	}
+	
+	@Test
+	public void testGetAllAgeTypes_OHServiceException() {
+		String request = "/agetypes";
 
+		String title = "Exception Title";
+		String message = "Exception Message testGetAllAgeTypes_OHServiceException";
+		OHSeverityLevel severity = OHSeverityLevel.ERROR;
+		try {
+			when(ageTypeManagerMock.getAgeType()).thenThrow(new OHServiceException(new 
+					OHExceptionMessage(title, message, severity)));
+		} catch (OHServiceException e1) {
+			e1.printStackTrace();
+		}
+				
+		MvcResult result = null;
+
+		try {
+			result = this.mockMvc
+				.perform(get(request))
+				.andDo(print())
+				.andExpect(status().is5xxServerError())
+				.andExpect(status().isInternalServerError())
+				.andReturn();
+		} catch (Exception e) {
+			fail("Exception Realted to MockMvc");
+		} finally {
+			LOGGER.info("result: {}", result);
+			OHExceptionMessage exceptionMessage = ((OHServiceException)result.getResolvedException()).getMessages().get(0);
+			assertEquals(message, exceptionMessage.getMessage());
+			assertEquals(title, exceptionMessage.getTitle());
+			assertEquals(severity, exceptionMessage.getLevel());
+		}
+	}
+	
+	
+	@Test//(expected=OHServiceException.class)
+	public void testGetAllAgeTypes_NO_CONTENT() throws OHServiceException{
+		String request = "/agetypes";
+
+		ArrayList<AgeType> results = AgeTypeHelper.genArrayList(0);
+		List<AgeTypeDTO> parsedResults = ageTypeMapper.map2DTOList(results);
+
+		when(ageTypeManagerMock.getAgeType()).thenReturn(results);
+				
+		MvcResult result = null;
+
+		try {
+			result = this.mockMvc
+				.perform(get(request))
+				.andDo(log())
+				.andExpect(status().is2xxSuccessful())
+				.andExpect(status().isNoContent())
+				.andExpect(content().string(containsString(new ObjectMapper().writeValueAsString(parsedResults))))
+				.andReturn();
+		} catch (Exception e) {
+			fail("Exception Realted to MockMvc");
+		} finally {
+			LOGGER.debug("result: {}", result);
+		}
+	}
+	
 	@Test
 	public void testUpdateAgeType_200() throws Exception {
 		String request = "/agetypes";

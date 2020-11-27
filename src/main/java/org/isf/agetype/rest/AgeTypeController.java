@@ -74,7 +74,7 @@ public class AgeTypeController {
 	 * @throws OHServiceException
 	 */
 	@GetMapping(value = "/agetypes", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<AgeTypeDTO>> getAllAgeTypes() throws OHServiceException {
+	public ResponseEntity<List<AgeTypeDTO>> getAllAgeTypes() {
 		LOGGER.info("Get age types");
 		List<AgeType> results = ageTypeManager.getAgeType();
 		List<AgeTypeDTO> parsedResults = mapper.map2DTOList(results);
@@ -137,7 +137,7 @@ public class AgeTypeController {
 	 * @throws OHServiceException 
 	 */
 	@GetMapping(value = "/agetypes/{index}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<AgeType> getAgeTypeByIndex(@PathVariable int index) throws OHServiceException {
+	public ResponseEntity<AgeType> getAgeTypeByIndex(@PathVariable int index) {
 		LOGGER.info("Get age type by index: {}", index);
 		AgeType result = ageTypeManager.getTypeByCode(index);
 		if(result != null){
